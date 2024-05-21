@@ -1,0 +1,81 @@
+{
+    "type": "bubble",
+    "size": "deca",
+    "body": {
+      "type": "box",
+      "layout": "vertical",
+      "contents": [
+        {
+          "type": "text",
+          "text": "射手座",
+          "weight": "bold",
+          "size": "xxl",
+          "margin": "md"
+        },
+        {
+          "type": "text",
+          "text": "11/22-12/21",
+          "size": "md",
+          "color": "#aaaaaa",
+          "wrap": true
+        },
+        {
+          "type": "separator",
+          "margin": "xxl"
+        },
+        {
+          "type": "box",
+          "layout": "vertical",
+          "margin": "xxl",
+          "spacing": "sm",
+          "contents": [
+            {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "孫小美",
+                  "size": "lg",
+                  "color": "#555555",
+                  "flex": 0
+                },
+                {
+                  "type": "text",
+                  "text": "12/3",
+                  "size": "lg",
+                  "color": "#111111",
+                  "align": "end"
+                }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "王小明",
+                  "size": "lg",
+                  "color": "#555555",
+                  "flex": 0
+                },
+                {
+                  "type": "text",
+                  "text": "12/20",
+                  "size": "lg",
+                  "color": "#111111",
+                  "align": "end"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "styles": {
+      "footer": {
+        "separator": true
+      }
+    }
+  }
