@@ -42,7 +42,7 @@ class BubbleGenerator:
 
     def generate_star_bubble(self,star, birthday_data):
         # 加载 starbubble.json 模板
-        with open(self.star_bubble_template_path, encoding='utf-8')
+        with open(self.star_bubble_template_path, encoding='utf-8') as f:
             star_bubble = json.load(f)    
         
         # 获取星座对应的日期范围

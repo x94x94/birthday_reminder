@@ -49,6 +49,7 @@ from linebot.models import (
 
 from person import Person  # from檔名 import類名 
 from bubble_generator import BubbleGenerator  
+from user_states import UserState
 
 app = Flask(__name__)
 
@@ -109,16 +110,50 @@ welcome_msg = """您好!
 【F】查詢生日
 """
 bubble_generator = BubbleGenerator('temp_data/BDbubble.json', 'temp_data/starbubble.json')
+user_states = {}
+
+# def get_user_state(user_id):
+#     if user_id not in user_states:
+#         user_states[user_id] = {
+#             "current_person": None,
+#             "people_list": {},
+#             "current_function": '',
+#             "current_status": '',
+#             "current_name": ''
+#         }
+#     return user_states[user_id]
 
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_text_message(event):
+    # 收到指令時,先抓出送指令的人的id,然後去看她之間有沒有送過其他指令
+    # 如果沒送過指令,就先把id保存起來,連同指令一起保存
+    user_id = event.source.user_id
+    # 根據user_id,找出對應的 current_function, current_status, people_list, current_name, current_person
+    # 如果找不到對應的資料,那就為新的user_id新增一筆資料
+    if user_id in user_states:
+        id = user_states[user_id].user_id
+    else:
+        user_states[user_id] = UserState(user_id) #實例化
+    
+    user = user_states[user_id] #user=user_states這個字典裡key為user_id的value
+
     text = event.message.text
+    current_status_ = user.current_status
+    current_function_ = user.current_function
+    current_name_ = user.current_name
+    current_person_ = user.current_person
+    people_list_ = user.people_list
+
+    # user.setCurrent_function('A')
+    # user.setCurrent_status('create name')
+
+
     global current_function
     global current_status
     global people_list
     global current_name
     global current_person
-    global msg
+
     print(f"current_function:{current_function}, current_status:{current_status}, text: {text}")
     msg = ''
     r = ''
@@ -192,7 +227,7 @@ def handle_text_message(event):
             if 1 <= month <= 12:
                 with open('temp_data/birthday_data.json', encoding='utf-8') as f:
                     birthday_data = json.load(f)
-                bubble_data = generate_month_bubble(month, birthday_data)
+                bubble_data = bubble_generator.generate_month_bubble(month, birthday_data)
                 msg = FlexMessage(contents=FlexContainer.from_dict(bubble_data), altText='bdbubble')
             
             else:
@@ -215,7 +250,7 @@ def handle_text_message(event):
         else:
             with open('temp_data/birthday_data.json', encoding='utf-8') as f:
                 birthday_data = json.load(f)
-            star_bubble = generate_star_bubble(star, birthday_data)
+            star_bubble = bubble_generator.generate_star_bubble(star, birthday_data)
             msg = FlexMessage(contents=FlexContainer.from_dict(star_bubble), altText='starbubble')
             current_function = ''
             current_status = ''
@@ -302,6 +337,9 @@ def handle_message(event):
     with ApiClient(configuration) as api_client:
         line_bot_api = MessagingApi(api_client)
         profile=line_bot_api.get_profile(userid) 
+
+        #user_states[userid] = UserState(userid)
+        #user_states[userid].setUserProfile(profile)
 
         #insert into mongodb
         u=dict(profile)
