@@ -94,11 +94,6 @@ def callback():
     return 'OK'
 
 
-# current_person=None
-# people_list = {}
-# current_function = ''
-# current_status = ''
-# current_name = ''
 welcome_msg = """您好!
 我是 Birthday Reminder
 請手動輸入指令代碼
@@ -113,7 +108,6 @@ bubble_generator = BubbleGenerator('temp_data/BDbubble.json', 'temp_data/starbub
 user_states = {}
 
 
-
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_text_message(event):
     # 收到指令時,先抓出送指令的人的id,然後去看她之間有沒有送過其他指令
@@ -121,9 +115,7 @@ def handle_text_message(event):
     user_id = event.source.user_id
     # 根據user_id,找出對應的 current_function, current_status, people_list, current_name, current_person
     # 如果找不到對應的資料,那就為新的user_id新增一筆資料
-    if user_id in user_states:
-        id = user_states[user_id].user_id
-    else:
+    if user_id not in user_states:
         user_states[user_id] = UserState(user_id) #實例化
     
     user = user_states[user_id] #user=user_states這個字典裡key為user_id的value
@@ -162,8 +154,9 @@ def handle_text_message(event):
             user.current_name = name
             user.current_status = 'create birthday'
     elif current_function == "A" and current_status == 'create birthday':   
+        birthday = text
         result={}
-        result = user.current_person.setBirthday(text)
+        result = user.current_person.setBirthday(birthday)
         print(f'result: {result}')
         if result['success_msg'] != None:
             r = result['success_msg'] 
@@ -175,9 +168,7 @@ def handle_text_message(event):
         else:
             r = result['error_msg']
             print(people_list)
-            if user.current_name in people_list:
-                 user.current_function ('')
-                 user.cuurrent_status('')
+
 
         msg=TextMessage(text=r)
 
