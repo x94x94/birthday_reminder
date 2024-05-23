@@ -94,11 +94,11 @@ def callback():
     return 'OK'
 
 
-current_person=None
-people_list = {}
-current_function = ''
-current_status = ''
-current_name = ''
+# current_person=None
+# people_list = {}
+# current_function = ''
+# current_status = ''
+# current_name = ''
 welcome_msg = """您好!
 我是 Birthday Reminder
 請手動輸入指令代碼
@@ -112,16 +112,7 @@ welcome_msg = """您好!
 bubble_generator = BubbleGenerator('temp_data/BDbubble.json', 'temp_data/starbubble.json')
 user_states = {}
 
-# def get_user_state(user_id):
-#     if user_id not in user_states:
-#         user_states[user_id] = {
-#             "current_person": None,
-#             "people_list": {},
-#             "current_function": '',
-#             "current_status": '',
-#             "current_name": ''
-#         }
-#     return user_states[user_id]
+
 
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_text_message(event):
@@ -138,23 +129,14 @@ def handle_text_message(event):
     user = user_states[user_id] #user=user_states這個字典裡key為user_id的value
 
     text = event.message.text
-    current_status_ = user.current_status
-    current_function_ = user.current_function
-    current_name_ = user.current_name
-    current_person_ = user.current_person
-    people_list_ = user.people_list
-
-    # user.setCurrent_function('A')
-    # user.setCurrent_status('create name')
+    current_status = user.current_status
+    current_function = user.current_function
+    current_name = user.current_name
+    current_person = user.current_person
+    people_list = user.people_list
 
 
-    global current_function
-    global current_status
-    global people_list
-    global current_name
-    global current_person
-
-    print(f"current_function:{current_function}, current_status:{current_status}, text: {text}")
+    print(f"current_function:{user.current_function}, current_status:{user.current_status}, text: {text}")
     msg = ''
     r = ''
     # 檢查檔案是否存在，如果不存在就創建一個空的 JSON 檔案
@@ -172,30 +154,30 @@ def handle_text_message(event):
 
         if name in people_list:
             msg=TextMessage(text="壽星名字已存在,請重新輸入【A】另外命名,或輸入【B】刪除先前重複的壽星資料後再新增")
-            current_function = ''
-            current_status = ''
+            user.current_function=''
+            user.current_status=''
         else:
             msg=TextMessage(text=f"壽星名字叫做  {name}  ,\n接著請輸入壽星生日,例如:1990/01/01(出生年可省略) ")
-            current_person=Person(name)
-            current_name = name
-            current_status = 'create birthday'
+            user.current_person=Person(name)
+            user.current_name = name
+            user.current_status = 'create birthday'
     elif current_function == "A" and current_status == 'create birthday':   
         result={}
-        result = current_person.setBirthday(text)
+        result = user.current_person.setBirthday(text)
         print(f'result: {result}')
-        if (result['success_msg'] != None):
+        if result['success_msg'] != None:
             r = result['success_msg'] 
-            current_status = ''
-            people_list[current_name]=current_person.birthday
+            user.current_status=''
+            people_list[current_name]=user.current_person.birthday
             with open("temp_data/birthday_data.json", "w", encoding='utf-8') as f:
                 json.dump(people_list,f, indent=4,ensure_ascii=False)
 
         else:
             r = result['error_msg']
             print(people_list)
-            if current_name in people_list:
-                current_function = ''
-                current_status = ''
+            if user.current_name in people_list:
+                 user.current_function ('')
+                 user.cuurrent_status('')
 
         msg=TextMessage(text=r)
 
@@ -211,12 +193,12 @@ def handle_text_message(event):
                 with open("temp_data/birthday_data.json", "w", encoding='utf-8') as f:
                     json.dump(birthday_data, f,ensure_ascii=False)
             r = f"已刪除壽星 {name} 的生日"
-            current_status = ''
-            current_function = ''
+            user.current_status =''
+            user.current_function=''
         else:
             r = f"找不到姓名為 {name} 的壽星,請重新輸入【B】刪除正確的壽星名字"
-            current_function = ''
-            current_status = ''
+            user.current_function=''
+            user.current_status=''
 
         msg=TextMessage(text=r)
         
@@ -235,8 +217,8 @@ def handle_text_message(event):
         else:
             msg = TextMessage(text="沒有正確輸入數字1到12,請重新輸入【D】查詢")
         
-        current_function = ''
-        current_status = ''
+        user.current_function=''
+        user.current_status=''
 
     
     elif current_function == "E" and current_status == 'select star':
@@ -245,15 +227,15 @@ def handle_text_message(event):
 
         if star not in valid_star_signs:
             msg=TextMessage(text="無效的星座，請重新輸入【E】來查找")
-            current_function = ''
-            current_status = ''
+            user.current_function=''
+            user.current_status=''
         else:
             with open('temp_data/birthday_data.json', encoding='utf-8') as f:
                 birthday_data = json.load(f)
             star_bubble = bubble_generator.generate_star_bubble(star, birthday_data)
             msg = FlexMessage(contents=FlexContainer.from_dict(star_bubble), altText='starbubble')
-            current_function = ''
-            current_status = ''
+            user.current_function=''
+            user.current_status=''
             
     
     elif current_function == "F" and current_status == 'select people':
@@ -268,28 +250,28 @@ def handle_text_message(event):
         if not found:  # 如果没有找到匹配的人名
             msg=TextMessage(text="找不到該壽星,請重新輸入【F】查詢")
             
-        current_function = ''
-        current_status = ''
+        user.current_function =''
+        user.current_status=''
         
     elif text=="A":
         msg=TextMessage(text="請輸入壽星的姓名")
-        current_function = "A"
-        current_status = 'create name'
+        user.current_function= 'A'
+        user.current_status='create name'
             
     elif text == "B" :
         msg=TextMessage(text="請輸入欲刪除的壽星姓名")
-        current_function = "B"
-        current_status = 'delete name'
+        user.current_function="B"
+        user.current_status='delete name'
 
     elif text == "C" :
         msg=TextMessage(text="還在施工中喔!去其他地方玩")
-        current_function = ""
-        current_status = ''
+        user.current_function=''
+        user.current_status=''
 
     elif text == "D" :
         msg=TextMessage(text="請輸入要查詢的月份,例如12")
-        current_function = "D"
-        current_status = 'select month'
+        user.current_function="D"
+        user.current_status='select month'
 
     elif text == "E" :
         items=[QuickReplyItem(action=MessageAction(label='水瓶',text='水瓶')),
@@ -306,13 +288,13 @@ def handle_text_message(event):
                QuickReplyItem(action=MessageAction(label='魔羯',text='魔羯'))]
         quick_reply=QuickReply(items=items)
         msg=TextMessage(text="請選擇星座：", quick_reply=quick_reply)
-        current_function = "E"
-        current_status = 'select star'
+        user.current_function='E'
+        user.current_status='select star'
 
     elif text == "F" :
         msg=TextMessage(text="請輸入要查詢的壽星姓名")
-        current_function = "F"
-        current_status = 'select people'
+        user.current_function="F"
+        user.current_status='select people'
 
         
     else:

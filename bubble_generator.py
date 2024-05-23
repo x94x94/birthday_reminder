@@ -63,11 +63,15 @@ class BubbleGenerator:
             star_sign = self.get_star_sign(month, day)
             if star_sign == star:
                 birthday = f"{info['month']}/{info['day']}"
-                people_list[name] = birthday
+                people_list[name] = (month, day)
+
+         # 按生日排序
+        sorted_people_list = sorted(people_list.items(), key=lambda x: (x[1][0], x[1][1]))
         
         # 如果有生日数据，则将其添加到 Bubble 模板中
-        if people_list:
-            for name, birthday in people_list.items():
+        if sorted_people_list:
+            for name, (month, day) in sorted_people_list:
+                birthday = f"{month}/{day}"
                 name_text = {"type": "text", "text": name, "size": "lg", "color": "#555555", "flex": 0}
                 birthday_text = {"type": "text", "text": birthday, "size": "lg", "color": "#111111", "align": "end"}
                 star_bubble['body']['contents'][3]['contents'].append(
