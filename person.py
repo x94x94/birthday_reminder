@@ -25,27 +25,13 @@ class Person:
         if not (1 <= month <= 12):
             return {'success_msg': None, 'error_msg': "輸入格式不正確，請重新輸入，例如: 1990/01/01"}
         # 3. 檢查日
-        if month in [1, 3, 5, 7, 8, 10, 12]:
-            if not (1 <= day <= 31):
-                return {'success_msg': None, 'error_msg': "輸入格式不正確，請重新輸入，例如: 1990/01/01"}
-        elif month in [4, 6, 9, 11]:
-            if not (1 <= day <= 30):
-                return {'success_msg': None, 'error_msg': "輸入格式不正確，請重新輸入，例如: 1990/01/01"}
-        elif month == 2:
-            if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0):  # 閏年
-                if not (1 <= day <= 29):
-                    return {'success_msg': None, 'error_msg': "輸入格式不正確，請重新輸入，例如: 1990/01/01"}
-            else:
-                if not (1 <= day <= 28):
-                    return {'success_msg': None, 'error_msg': "輸入格式不正確，請重新輸入，例如: 1990/01/01"}
+        days_in_month = {
+            1: 31, 2: 29 if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0) else 28, 3: 31,
+            4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31
+        }
+        if not (1 <= day <= days_in_month.get(month, 0)):
+            return {'success_msg': None, 'error_msg': "輸入格式不正確，請重新輸入，例如: 1990/01/01"}
 
-
-        if year != 0:
-            self.birthday = {"year": str(year), "month": str(month), "day": str(day)}
-        else:
-            self.birthday = {"year": "0", "month": str(month), "day": str(day)}
-
-        if year != 0:
-            return {'success_msg': f"壽星名字叫做 {self.name}，生日是 {year:04d}/{month:02d}/{day:02d} 已記錄完成"}
-        else:
-            return {'success_msg': f"壽星名字叫做 {self.name}，生日是 {month:02d}/{day:02d} 已記錄完成"}
+        self.birthday = {"year": str(year), "month": str(month), "day": str(day)} if year != 0 else {"year": "0", "month": str(month), "day": str(day)}
+        birthday_str = f"{year:04d}/{month:02d}/{day:02d}" if year != 0 else f"{month:02d}/{day:02d}"
+        return {'success_msg': f"壽星名字叫做 {self.name}，生日是 {birthday_str} 已記錄完成"}

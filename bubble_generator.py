@@ -85,33 +85,26 @@ class BubbleGenerator:
         
         return star_bubble
 
-    def get_star_sign(self, month, day): #根据日期返回星座名称
-        if (month == 1 and day >= 20) or (month == 2 and day <= 18):
-            return "水瓶"
-        elif (month == 2 and day >= 19) or (month == 3 and day <= 20):
-            return "雙魚"
-        elif (month == 3 and day >= 21) or (month == 4 and day <= 19):
-            return "牡羊"
-        elif (month == 4 and day >= 20) or (month == 5 and day <= 20):
-            return "金牛"
-        elif (month == 5 and day >= 21) or (month == 6 and day <= 21):
-            return "雙子"
-        elif (month == 6 and day >= 22) or (month == 7 and day <= 22):
-            return "巨蟹"
-        elif (month == 7 and day >= 23) or (month == 8 and day <= 22):
-            return "獅子"
-        elif (month == 8 and day >= 23) or (month == 9 and day <= 22):
-            return "處女"
-        elif (month == 9 and day >= 23) or (month == 10 and day <= 22):
-            return "天秤"
-        elif (month == 10 and day >= 23) or (month == 11 and day <= 21):
-            return "天蠍"
-        elif (month == 11 and day >= 22) or (month == 12 and day <= 21):
-            return "射手"
-        elif (month == 12 and day >= 22) or (month == 1 and day <= 19):
-            return "魔羯"
-        else:
-            return None
+    def get_star_sign(self, month, day):
+        zodiac_dates = [
+            ("水瓶", (1, 20), (2, 18)),
+            ("雙魚", (2, 19), (3, 20)),
+            ("牡羊", (3, 21), (4, 19)),
+            ("金牛", (4, 20), (5, 20)),
+            ("雙子", (5, 21), (6, 21)),
+            ("巨蟹", (6, 22), (7, 22)),
+            ("獅子", (7, 23), (8, 22)),
+            ("處女", (8, 23), (9, 22)),
+            ("天秤", (9, 23), (10, 22)),
+            ("天蠍", (10, 23), (11, 21)),
+            ("射手", (11, 22), (12, 21)),
+            ("魔羯", (12, 22), (1, 19)),
+        ]
+
+        for sign, (start_month, start_day), (end_month, end_day) in zodiac_dates:
+            if (month == start_month and day >= start_day) or (month == end_month and day <= end_day):
+                return sign
+        return None
 
     def get_star_date_range(self, star): #根據星座返回星座的日期范围
         star_date_ranges = {

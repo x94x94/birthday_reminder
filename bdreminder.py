@@ -65,7 +65,7 @@ uri = "mongodb+srv://x94x94:lai261026@x94x94.fohhjet.mongodb.net/?retryWrites=tr
 mongo_client = MongoClient(uri, server_api=ServerApi('1'))    
 # Send a ping to confirm a successful connection
 try:
-    client.admin.command('ping')
+    mongo_client.admin.command('ping')
     print("Pinged your deployment. You successfully connected to MongoDB!")
 except Exception as e:
     print(e) 
@@ -106,7 +106,7 @@ welcome_msg = """您好!
 """
 bubble_generator = BubbleGenerator('temp_data/BDbubble.json', 'temp_data/starbubble.json')
 user_states = {}
-
+zodiac_signs = ["水瓶", "雙魚", "牡羊", "金牛", "雙子", "巨蟹", "獅子", "處女", "天秤", "天蠍", "射手", "魔羯"]
 
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_text_message(event):
@@ -214,73 +214,60 @@ def handle_text_message(event):
     
     elif current_function == "E" and current_status == 'select star':
         star = text
-        valid_star_signs = ["水瓶", "雙魚", "牡羊", "金牛", "雙子", "巨蟹", "獅子", "處女", "天秤", "天蠍", "射手", "魔羯"]
 
-        if star not in valid_star_signs:
-            msg=TextMessage(text="無效的星座，請重新輸入【E】來查找")
-            user.current_function=''
-            user.current_status=''
+        if star not in zodiac_signs:
+            msg = TextMessage(text="無效的星座，請重新輸入【E】來查找")
+            user.current_function = ''
+            user.current_status = ''
         else:
             with open('temp_data/birthday_data.json', encoding='utf-8') as f:
                 birthday_data = json.load(f)
             star_bubble = bubble_generator.generate_star_bubble(star, birthday_data)
             msg = FlexMessage(contents=FlexContainer.from_dict(star_bubble), altText='starbubble')
-            user.current_function=''
-            user.current_status=''
-            
-    
+            user.current_function = ''
+            user.current_status = ''
+
     elif current_function == "F" and current_status == 'select people':
-        people = text  
+        people = text
         found = False  # 添加一个变量来标记是否找到匹配的人名
         for name, birthday in people_list.items():
             if name == people:
-                msg=TextMessage(text=f"{name}的生日是：{birthday['month']}/{birthday['day']}")
+                msg = TextMessage(text=f"{name}的生日是：{birthday['month']}/{birthday['day']}")
                 found = True  # 找到匹配的人名
                 break  # 找到后退出循环
-        
+
         if not found:  # 如果没有找到匹配的人名
-            msg=TextMessage(text="找不到該壽星,請重新輸入【F】查詢")
-            
-        user.current_function =''
-        user.current_status=''
-        
-    elif text=="A":
-        msg=TextMessage(text="請輸入壽星的姓名")
-        user.current_function= 'A'
-        user.current_status='create name'
-            
-    elif text == "B" :
-        msg=TextMessage(text="請輸入欲刪除的壽星姓名")
-        user.current_function="B"
-        user.current_status='delete name'
+            msg = TextMessage(text="找不到該壽星,請重新輸入【F】查詢")
 
-    elif text == "C" :
-        msg=TextMessage(text="還在施工中喔!去其他地方玩")
-        user.current_function=''
-        user.current_status=''
+        user.current_function = ''
+        user.current_status = ''
 
-    elif text == "D" :
-        msg=TextMessage(text="請輸入要查詢的月份,例如12")
-        user.current_function="D"
-        user.current_status='select month'
+    elif text == "A":
+        msg = TextMessage(text="請輸入壽星的姓名")
+        user.current_function = 'A'
+        user.current_status = 'create name'
 
-    elif text == "E" :
-        items=[QuickReplyItem(action=MessageAction(label='水瓶',text='水瓶')),
-               QuickReplyItem(action=MessageAction(label='雙魚',text='雙魚')),
-               QuickReplyItem(action=MessageAction(label='牡羊',text='牡羊')),
-               QuickReplyItem(action=MessageAction(label='金牛',text='金牛')),
-               QuickReplyItem(action=MessageAction(label='雙子',text='雙子')),
-               QuickReplyItem(action=MessageAction(label='巨蟹',text='巨蟹')),
-               QuickReplyItem(action=MessageAction(label='獅子',text='獅子')),
-               QuickReplyItem(action=MessageAction(label='處女',text='處女')),
-               QuickReplyItem(action=MessageAction(label='天秤',text='天秤')),
-               QuickReplyItem(action=MessageAction(label='天蠍',text='天蠍')),
-               QuickReplyItem(action=MessageAction(label='射手',text='射手')),
-               QuickReplyItem(action=MessageAction(label='魔羯',text='魔羯'))]
-        quick_reply=QuickReply(items=items)
-        msg=TextMessage(text="請選擇星座：", quick_reply=quick_reply)
-        user.current_function='E'
-        user.current_status='select star'
+    elif text == "B":
+        msg = TextMessage(text="請輸入欲刪除的壽星姓名")
+        user.current_function = "B"
+        user.current_status = 'delete name'
+
+    elif text == "C":
+        msg = TextMessage(text="還在施工中喔!去其他地方玩")
+        user.current_function = ''
+        user.current_status = ''
+
+    elif text == "D":
+        msg = TextMessage(text="請輸入要查詢的月份,例如12")
+        user.current_function = "D"
+        user.current_status = 'select month'
+
+    elif text == "E":
+        items = [QuickReplyItem(action=MessageAction(label=sign, text=sign)) for sign in zodiac_signs]
+        quick_reply = QuickReply(items=items)
+        msg = TextMessage(text="請選擇星座：", quick_reply=quick_reply)
+        user.current_function = 'E'
+        user.current_status = 'select star'
 
     elif text == "F" :
         msg=TextMessage(text="請輸入要查詢的壽星姓名")
